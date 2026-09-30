@@ -18,16 +18,12 @@
   </section>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
 import { store } from '../store/libros'
 
-export default {
-  name: 'InicioView',
-  computed: {
-    total() { return store.libros.length },
-    recientes() { return [...store.libros].slice(-3).reverse() }
-  }
-}
+const total = computed(() => store.libros.length)
+const recientes = computed(() => [...store.libros].slice(-3).reverse())
 </script>
 
 <style scoped>

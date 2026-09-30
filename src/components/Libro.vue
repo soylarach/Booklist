@@ -5,7 +5,6 @@
         <router-link :to="{ name: 'detalle', params: { id } }">{{ titulo }}</router-link>
       </h3>
       <p class="libro-autor">{{ autor }} · {{ categoria }}</p>
-      <!-- v-show: el elemento siempre existe, solo cambia su visibilidad -->
       <p v-show="verDescripcion" class="libro-desc">{{ descripcion || 'Sin descripción.' }}</p>
     </div>
     <div class="libro-acciones">
@@ -19,21 +18,20 @@
   </article>
 </template>
 
-<script>
-export default {
-  name: 'Libro',
-  props: {
-    id: { type: Number, required: true },
-    titulo: { type: String, required: true },
-    autor: { type: String, required: true },
-    categoria: { type: String, default: 'Otro' },
-    descripcion: { type: String, default: '' }
-  },
-  emits: ['eliminar'],
-  data() {
-    return { verDescripcion: false }
-  }
-}
+<script setup>
+import { ref } from 'vue'
+
+defineProps({
+  id: { type: Number, required: true },
+  titulo: { type: String, required: true },
+  autor: { type: String, required: true },
+  categoria: { type: String, default: 'Otro' },
+  descripcion: { type: String, default: '' }
+})
+
+defineEmits(['eliminar'])
+
+const verDescripcion = ref(false)
 </script>
 
 <style scoped>

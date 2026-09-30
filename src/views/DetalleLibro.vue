@@ -16,22 +16,25 @@
   </section>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { store } from '../store/libros'
 
-export default {
-  name: 'DetalleLibro',
-  // Llega desde la ruta dinámica /libros/:id (props en el router)
-  props: { id: { type: Number, required: true } },
-  computed: {
-    libro() { return store.obtener(this.id) }
-  },
-  methods: {
-    eliminar() {
-      store.eliminar(this.id)
-      this.$router.push({ name: 'lista' })
-    }
+const props = defineProps({
+  id: {
+    type: Number,
+    required: true
   }
+})
+
+const router = useRouter()
+
+const libro = computed(() => store.obtener(props.id))
+
+function eliminar() {
+  store.eliminar(props.id)
+  router.push({ name: 'lista' })
 }
 </script>
 

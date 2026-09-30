@@ -20,7 +20,6 @@
 
     <div v-if="libros.length === 0" class="vacio">
       <p>No hay libros disponibles. Agrega el primero con el formulario.</p>
-      <!-- .once: el clic solo se ejecuta una vez por botón -->
       <button type="button" class="boton" @click.once="cargarEjemplos">Cargar libros de ejemplo</button>
     </div>
     <p v-else-if="librosFiltrados.length === 0" class="vacio">Ningún libro coincide con los filtros.</p>
@@ -35,34 +34,37 @@
   </section>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue'
 import { store } from '../store/libros'
 import FormularioLibro from '../components/FormularioLibro.vue'
 import Libro from '../components/Libro.vue'
 
-export default {
-  name: 'ListaLibros',
-  components: { FormularioLibro, Libro },
-  data() {
-    return { filtroAutor: '', filtroCategoria: '' }
-  },
-  computed: {
-    libros() { return store.libros },
-    categorias() { return store.categorias },
-    librosFiltrados() {
-      const autor = this.filtroAutor.trim().toLowerCase()
-      return this.libros.filter(
-        (l) =>
-          l.autor.toLowerCase().includes(autor) &&
-          (!this.filtroCategoria || l.categoria === this.filtroCategoria)
-      )
-    }
-  },
-  methods: {
-    agregarLibro(libro) { store.agregar(libro) },
-    eliminarLibro(id) { store.eliminar(id) },
-    cargarEjemplos() { store.cargarEjemplos() }
-  }
+const filtroAutor = ref('')
+const filtroCategoria = ref('')
+
+const libros = computed(() => store.libros)
+const categorias = computed(() => store.categorias)
+
+const librosFiltrados = computed(() => {
+  const autor = filtroAutor.value.trim().toLowerCase()
+  return libros.value.filter(
+    (l) =>
+      l.autor.toLowerCase().includes(autor) &&
+      (!filtroCategoria.value || l.categoria === filtroCategoria.value)
+  )
+})
+
+function agregarLibro(libro) {
+  store.agregar(libro)
+}
+
+function eliminarLibro(id) {
+  store.eliminar(id)
+}
+
+function cargarEjemplos() {
+  store.cargarEjemplos()
 }
 </script>
 

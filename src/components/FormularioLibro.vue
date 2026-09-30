@@ -1,7 +1,6 @@
 <template>
   <section class="formulario">
     <h2>Agregar libro</h2>
-    <!-- .prevent evita que el navegador recargue la página al enviar -->
     <form @submit.prevent>
       <div class="campo">
         <label for="titulo">Título</label>
@@ -27,7 +26,6 @@
       <button type="button" class="boton boton-primario" @click="agregar">Agregar libro</button>
     </form>
 
-    <!-- Datos ingresados en tiempo real -->
     <aside class="vista-previa" aria-live="polite">
       <h3>Vista previa</h3>
       <p v-if="!hayDatos" class="suave">Empieza a escribir para ver el libro aquí.</p>
@@ -41,38 +39,40 @@
   </section>
 </template>
 
-<script>
-const vacio = () => ({ titulo: '', autor: '', categoria: '', descripcion: '' })
+<script setup>
+import { ref, computed } from 'vue'
 
-export default {
-  name: 'FormularioLibro',
-  props: { categorias: { type: Array, required: true } },
-  emits: ['agregar'],
-  data() {
-    return { nuevo: vacio(), error: '' }
-  },
-  computed: {
-    hayDatos() {
-      return Object.values(this.nuevo).some((v) => v.trim() !== '')
-    }
-  },
-  methods: {
-    agregar() {
-      const { titulo, autor, categoria, descripcion } = this.nuevo
-      if (!titulo.trim() || !autor.trim() || !categoria) {
-        this.error = 'Completa el título, el autor y la categoría para agregar el libro.'
-        return
-      }
-      this.$emit('agregar', {
-        titulo: titulo.trim(),
-        autor: autor.trim(),
-        categoria,
-        descripcion: descripcion.trim()
-      })
-      this.nuevo = vacio()
-      this.error = ''
-    }
+defineProps({
+  categorias: {
+    type: Array,
+    required: true
   }
+})
+
+const emit = defineEmits(['agregar'])
+
+const vacio = () => ({ titulo: '', autor: '', categoria: '', descripcion: '' })
+const nuevo = ref(vacio())
+const error = ref('')
+
+const hayDatos = computed(() => {
+  return Object.values(nuevo.value).some((v) => v.trim() !== '')
+})
+
+function agregar() {
+  const { titulo, autor, categoria, descripcion } = nuevo.value
+  if (!titulo.trim() || !autor.trim() || !categoria) {
+    error.value = 'Completa el título, el autor y la categoría para agregar el libro.'
+    return
+  }
+  emit('agregar', {
+    titulo: titulo.trim(),
+    autor: autor.trim(),
+    categoria,
+    descripcion: descripcion.trim()
+  })
+  nuevo.value = vacio()
+  error.value = ''
 }
 </script>
 
